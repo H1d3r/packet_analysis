@@ -4,7 +4,7 @@
 
 * 读取pcap包或网络接口
 
-    1. 打印详细的tcp会话／udp报文数据，目前支持mysql/pgsql/smtp/ftp/ssh/redis/mongodb/rdp认证协议解析，http/dns完成协议解析
+    1. 打印详细的tcp会话／udp报文数据，目前支持mysql/pgsql/smtp/ftp/redis/mongodb认证协议解析，http/dns完整协议解析
 
     2. IP数据包统计信息，用于监控网络异常流量
 
