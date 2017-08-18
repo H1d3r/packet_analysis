@@ -108,6 +108,9 @@
 [十二、TCP/IP协议分析-DNS协议-UDP](http://tanjiti.lofter.com/post/1cc6c85b_10c6c87f)
 
 
+
+
+
 # 示例
 
 <code>python print_tcp_session.py</code>
@@ -243,3 +246,20 @@
 3. ICMP报文
 
         [ICMP_Unreach]	[1500285748.08	2017-07-17 10:02:28]	10.0.0.5:500(98:01:a7:9e:dd:c1) ----->10.0.0.2:63816(58:f3:9c:51:90:c7)	3:3[host:port unreachable]	ttl=43	DATA_BINARY=	LEN=0
+
+
+
+联系
+===
+[原博客](http://danqingdani.blog.163.com/) 被封号了
+
+[欢迎订阅lofter上的备份](http://tanjiti.lofter.com/rss)
+
+[新浪微博weibo](http://weibo.com/tanjiti)
+
+[豆瓣读书](https://book.douban.com/people/tanjiti/) 分享最近看的书籍
+
+[baidu网盘](http://icode.baidu.com/myreview/changes/2469122) 分享一些网络安全资料（但基本很快就被删掉了）
+
+
+
