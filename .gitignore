@@ -3,3 +3,6 @@ log/*
 .idea/
 *.pyc
 */*.pyc
+data/pcap_private
+data/tcpudpdata/real.pcap
+data/ip_packet/*.db

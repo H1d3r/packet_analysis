@@ -81,6 +81,8 @@ class PGSQLAuth(object):
         :param sep:
         :return:
         """
+        if not (self.data_c2s and self.data_s2c):
+            return
 
         auth_detail = self.__parse_client_data()
         auth_result = self.__parse_server_data()
@@ -101,9 +103,8 @@ class PGSQLAuth(object):
                     sep=sep,
                     user=auth_result_dict.get("user"),
                     database=auth_result_dict.get("database"),
-                    password=auth_result_dict.get("password")
+                    password=auth_result_dict.get("password", "NONE_%d" % mills.getCurrenttimestamp())
                 )
-
 
                 if PGSQLAuth.__AUTH_CODE[auth_result[0]] == "Successful":
                     crack_result = 1
@@ -119,7 +120,7 @@ class PGSQLAuth(object):
                                      crack_detail=crack_detail,
                                      ts_start=self.ts_start,
                                      ts_end=self.ts_end)
-                yield pcci.toDict()
+                yield pcci
         else:
             logging.error("[PGSQL_ODD_DATA]: %s" % repr(self.data_tuple))
 

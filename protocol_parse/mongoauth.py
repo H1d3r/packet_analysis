@@ -55,6 +55,8 @@ class MongoDBAuth(object):
         :param sep:
         :return:
         """
+        if not (self.data_c2s and self.data_s2c):
+            return
 
         auth_detail = self.__parse_client_data()
         auth_result = self.__parse_server_data()
@@ -81,7 +83,7 @@ class MongoDBAuth(object):
                                              crack_detail=crack_detail,
                                              ts_start=self.ts_start,
                                              ts_end=self.ts_end)
-                        yield pcci.toDict()
+                        yield pcci
         else:
             if auth_detail or auth_result:
                 logging.error("[MongoDB_ODD_DATA]: %s" % repr(self.data_tuple))

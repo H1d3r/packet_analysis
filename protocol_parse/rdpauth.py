@@ -36,6 +36,9 @@ class RDPAuth(object):
         :param sep:
         :return:
         """
+        if not self.data_c2s:
+            # only check the data_c2s
+            return
 
         auth_detail = self.__parse_client_data()
 
@@ -56,7 +59,7 @@ class RDPAuth(object):
                                      crack_detail=crack_detail,
                                      ts_start=self.ts_start,
                                      ts_end=self.ts_end)
-                yield pcci.toDict()
+                yield pcci
         else:
             # logging.error("[RDP_ODD_DATA]: %s" % repr(self.data_tuple))
             pass
@@ -74,9 +77,6 @@ class RDPAuth(object):
 
         :return:
         """
-        # 版本号协商
-        # SSH－<主协议版本号>.<次协议版本号>－<软件版本号>
-        # SSH-2.0-paramiko_2.1.2
 
         auth_detail = []
         parts = self.data_c2s.split("\r\n")

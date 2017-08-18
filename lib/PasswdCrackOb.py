@@ -26,9 +26,7 @@ class PassWdCrackOb(object):
         1： 成功
         2： 失败
         3： 未知错误
-        其他： mysql error code
         :param crack_detail:
-        user/k123456
         :param ts_start: 开始时间
         :param ts_end: 结束时间
         :param protocolconf: 协议配置

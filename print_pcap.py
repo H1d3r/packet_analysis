@@ -298,11 +298,19 @@ class PCAPParse(object):
                 ip_type = "ipv6"
             else:
                 ip_type = eth.data.__class__.__name__
-                logging.error('No Valid IP Packet(not v4 or v6): %s %r '
-                              'src_mac:%s dst_mac:%s\n' % (ip_type, ip
-                                                           , src_mac,
-                                                           dst_mac))
-                continue
+                loop_ip = dpkt.loopback.Loopback(buf).data
+
+                if isinstance(loop_ip, dpkt.ip.IP):
+                    ip_type = "ipv4"
+                    ip = loop_ip
+                elif isinstance(loop_ip, dpkt.ip6.IP6):
+                    ip_type = "ipv6"
+                else:
+                    logging.error('No Valid IP Packet(not v4 or v6): %s %r '
+                                  'src_mac:%s dst_mac:%s\n' % (ip_type, ip
+                                                               , src_mac,
+                                                               dst_mac))
+                    continue
 
             if ip_type == "ipv4":
                 # src ip and dest ip
@@ -490,7 +498,7 @@ if __name__ == '__main__':
                                    ismultiprocess=False)
     from optparse import OptionParser
 
-    pcap_path = mills.path("data/pcap_pub/wireshark/mysql_complete.pcap")
+    pcap_path = mills.path("data/pcap_private/redisop.pcap")
     assetip = None
     assetport = None
 
@@ -533,5 +541,3 @@ if __name__ == '__main__':
     else:
         asset_port = None
     ppo.output_pcap(asset_ip=asset_ip, asset_port=asset_port)
-
-

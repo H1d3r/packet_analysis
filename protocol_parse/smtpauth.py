@@ -36,10 +36,11 @@ class SMTPAuth(object):
         :param sep:
         :return:
         """
+        if not (self.data_c2s and self.data_s2c):
+            return
+
         (is_both, auth_detail) = self.__parse_client_data()
         auth_result = self.__parse_server_data()
-        auth_detail.reverse()
-        auth_result.reverse()
 
         if auth_detail and auth_result:
 
@@ -62,7 +63,7 @@ class SMTPAuth(object):
                                                  crack_detail=crack_detail,
                                                  ts_start=self.ts_start,
                                                  ts_end=self.ts_end)
-                            yield pcci.toDict()
+                            yield pcci
 
             if is_both == 0:
                 # 账号密码分开传输
@@ -86,7 +87,7 @@ class SMTPAuth(object):
                                              crack_detail=crack_detail,
                                              ts_start=self.ts_start,
                                              ts_end=self.ts_end)
-                        yield pcci.toDict()
+                        yield pcci
         else:
             logging.error("[SMTP_ODD_DATA]: %s" % repr(self.data_tuple))
 
@@ -133,7 +134,7 @@ class SMTPAuth(object):
         auth_detail = []
         parts = self.__split_smtp_data(self.data_c2s)
 
-        client_data_parttern = re.compile(r'^(AUTH)?\s?(.+)$')
+        client_data_parttern = re.compile(r'^(AUTH)?\s?(.+)')
 
         is_both = 0
         for p in parts:

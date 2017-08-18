@@ -36,20 +36,27 @@ class FTPAuth(object):
         :return:
         """
 
+        if not (self.data_c2s and self.data_s2c):
+            return
+
         auth_detail = self.__parse_client_data()
         auth_result = self.__parse_server_data()
-        auth_detail.reverse()
-        auth_result.reverse()
+
+        # print auth_detail,auth_result
+
+
         if auth_detail and auth_result:
 
-            # 账号密码分开传输
+            auth_detail.reverse()
+            auth_result.reverse()
+
             len_of_auth_detail = len(auth_detail)
 
             if len_of_auth_detail % 2 == 0 and (2 * len(auth_result) == len_of_auth_detail):
                 while auth_result and auth_detail:
                     crack_result = auth_result.pop()
-                    crack_passwd = auth_detail.pop()
                     crack_user = auth_detail.pop()
+                    crack_passwd = auth_detail.pop()
 
                     crack_detail = "%s%s%s%s" % (sep, crack_user, sep, crack_passwd)
 
@@ -62,8 +69,9 @@ class FTPAuth(object):
                                          crack_detail=crack_detail,
                                          ts_start=self.ts_start,
                                          ts_end=self.ts_end)
-                    yield pcci.toDict()
+                    yield pcci
         else:
+
             logging.error("[FTP_ODD_DATA]: %s" % repr(self.data_tuple))
 
     def __parse_server_data(self):
@@ -76,19 +84,32 @@ class FTPAuth(object):
         # 4/5:failed 530 Login incorrect.
         # 3:un-finished
         auth_result = []
+        if not self.data_s2c:
+            return auth_result
+
         parts = self.__split_ftp_data(self.data_s2c)
-        server_data_pattern = re.compile(r'^(\d{3})\s(.+)$')
+        server_data_pattern = re.compile(r'^(\d{3})\s(.+)')
+
+        response_code_list = []
+        i = -1  # index of response_code
+
         for p in parts:
             m = re.match(server_data_pattern, p)
             if m is not None:
                 (command_code, param) = m.groups()
+
+                response_code_list.append(command_code)
+                i = i + 1
+
                 if command_code.startswith('5'):
-                    if command_code == "530" and param.find("Login incorrect") != -1:
+
+                    if command_code == "530" and response_code_list[i - 1] != "530":
                         auth_result.append(2)
-                    else:
+                    elif command_code != "530":
                         auth_result.append(3)
-                elif command_code == '230' and param.find("Login successful") != -1:
+                elif command_code == '230':
                     auth_result.append(1)
+
         return auth_result
 
     def __parse_client_data(self):
@@ -99,9 +120,12 @@ class FTPAuth(object):
         # command+\s+[param]+\r\n
         #
         auth_detail = []
+        if not self.data_c2s:
+            return auth_detail
+
         parts = self.__split_ftp_data(self.data_c2s)
 
-        client_data_parttern = re.compile(r'^(USER|PASS)\s(.+)$')
+        client_data_parttern = re.compile(r'^(USER|PASS)\s(.+)')
 
         for p in parts:
             m = re.match(client_data_parttern, p)
@@ -118,6 +142,7 @@ class FTPAuth(object):
         :param data:
         :return:
         """
+
         ftp_data_list = []
         try:
             ftp_data_list = data.split("\r\n")
@@ -125,4 +150,3 @@ class FTPAuth(object):
             logging.error("[SPLIT_FTP_DATA_FAILED]: %s %r" % (data, e))
 
         return ftp_data_list
-

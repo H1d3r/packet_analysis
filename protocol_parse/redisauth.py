@@ -35,12 +35,14 @@ class RESPAuth(object):
         self.data_c2s = data_c2s
         self.data_s2c = data_s2c
 
-    def parse_data(self):
+    def parse_data(self, sep="\x00"):
         """
 
         :param sep:
         :return:
         """
+        if not (self.data_c2s and self.data_s2c):
+            return
 
         auth_detail = self.__parse_client_data()
         auth_result = self.__parse_server_data()
@@ -62,7 +64,7 @@ class RESPAuth(object):
                                          crack_detail=crack_detail,
                                          ts_start=self.ts_start,
                                          ts_end=self.ts_end)
-                    yield pcci.toDict()
+                    yield pcci
         else:
             logging.error("[REDIS_ODD_DATA]: %s" % repr(self.data_tuple))
 

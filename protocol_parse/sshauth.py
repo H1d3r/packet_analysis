@@ -4,7 +4,7 @@ import logging
 import re
 
 from lib.PasswdCrackOb import PassWdCrackOb
-import lib.mills as mills
+
 
 class SSHAuth(object):
     """
@@ -35,6 +35,8 @@ class SSHAuth(object):
         :param sep:
         :return:
         """
+        if not (self.data_c2s and self.data_s2c):
+            return
 
         auth_detail = self.__parse_client_data()
         auth_result = self.__parse_server_data()
@@ -57,7 +59,7 @@ class SSHAuth(object):
                                          crack_detail=crack_detail,
                                          ts_start=self.ts_start,
                                          ts_end=self.ts_end)
-                    yield pcci.toDict()
+                    yield pcci
         else:
             logging.error("[SSH_ODD_DATA]: %s" % repr(self.data_tuple))
 
@@ -104,5 +106,3 @@ class SSHAuth(object):
                 auth_detail.append(p)
 
         return auth_detail
-
-

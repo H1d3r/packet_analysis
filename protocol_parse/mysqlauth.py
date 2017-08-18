@@ -29,12 +29,18 @@ class MySQLAuth(object):
         self.data_c2s = data_c2s
         self.data_s2c = data_s2c
 
+        # var
+        self.is_ssl = False
+
     def parse_data(self, sep='\x00'):
         """
 
         :param sep:
         :return:
         """
+
+        if not (self.data_c2s and self.data_s2c):
+            return
 
         auth_detail = self.__parse_client_data(sep=sep)
         auth_result = self.__parse_server_data()
@@ -43,7 +49,6 @@ class MySQLAuth(object):
 
         if auth_detail and auth_result:
 
-            # 账号密码同时传输
             if len(auth_detail) == len(auth_result):
 
                 while auth_result and auth_detail:
@@ -61,9 +66,10 @@ class MySQLAuth(object):
                                              crack_detail=crack_detail,
                                              ts_start=self.ts_start,
                                              ts_end=self.ts_end)
-                        yield pcci.toDict()
+                        yield pcci
         else:
-            logging.error("[MYSQL_ODD_DATA]: %s" % repr(self.data_tuple))
+            if not self.is_ssl:
+                logging.error("[MYSQL_ODD_DATA]: %s" % repr(self.data_tuple))
 
     def __parse_server_data(self):
         """
@@ -137,9 +143,11 @@ class MySQLAuth(object):
             if len_of_data_c2s == 36:
 
                 if is_ssl == '1':
-                    logging.info(
+                    self.is_ssl = True
+                    logging.debug(
                         "[MYSQL_SSL]: %s:%s -> %s:%s %f %f" % (self.src_ip, self.src_port, self.dst_ip,
                                                                self.dst_port, self.ts_start, self.ts_end))
+
                 continue
             # get the user name
             # string end with 00
